@@ -2,7 +2,7 @@ import abc
 
 from fastapi import APIRouter
 
-from ..provider import BaseAuthProvider
+from .auth import BaseAuthProvider
 
 
 class MockRequestConfig(abc.ABC):

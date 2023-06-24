@@ -3,12 +3,12 @@ from datetime import datetime
 from sqlalchemy import Column, Integer, String, Date, ForeignKey, Text
 from sqlalchemy.orm import declarative_base
 
-Base = declarative_base()
+RevisionBase = declarative_base()
 
-class Revision(Base):
+class Revision(RevisionBase):
     __tablename__ = "revisions"
     id = Column(Integer, primary_key=True, autoincrement=True)
-    user_name = Column(String(45), ForeignKey("user.name"), nullable=False)
+    user_name = Column(String(45), nullable=False)
 
     tablename = Column(String(45), nullable=False)
     row_id = Column(Integer, nullable=False)

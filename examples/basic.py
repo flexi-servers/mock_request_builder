@@ -26,10 +26,12 @@ class Parent(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String(255))
     test = Column(String(255))
+    foo = Column(String(255))
+    bar = Column(String(255))
 
 
     # mock_request
-    create_keys = ["name", "test"]
+    create_keys = ["name", "test", "foo", "bar"]
     update_keys = ["name", "test"]
 
 class Child(Base):
@@ -45,6 +47,7 @@ class Child(Base):
 
 # create all models
 Base.metadata.create_all(engine)
+MockBuilder.create_tables(engine)
 
 class MockConfig(MockRequestConfig):
     class DBAuthProvider(BaseAuthProvider):

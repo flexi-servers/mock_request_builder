@@ -10,8 +10,8 @@ from sqlalchemy.orm import DeclarativeMeta
 from starlette.responses import JSONResponse
 
 from mock_request_builder import ParentConfig
+from mock_request_builder.config.auth import BaseAuthProvider
 from mock_request_builder.config.config import MockRequestConfig
-from mock_request_builder.provider import BaseAuthProvider
 from mock_request_builder.sqlalchemy_to_pydantic import sqlalchemy_create_builder, sqlalchemy_to_json
 from mock_request_builder.utils import model_enable_soft_delete
 from mock_request_builder.utils.not_null import not_null

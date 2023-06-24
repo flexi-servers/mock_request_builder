@@ -4,7 +4,8 @@ from fastapi import APIRouter
 from fastapi import Depends
 from starlette.responses import JSONResponse
 
-from mock_request_builder import MockRequestConfig, BaseAuthProvider, ParentConfig
+from mock_request_builder import MockRequestConfig, ParentConfig
+from mock_request_builder.config.auth import BaseAuthProvider
 from mock_request_builder.sqlalchemy_to_pydantic import sqlalchemy_to_json
 from mock_request_builder.utils import model_enable_soft_delete
 

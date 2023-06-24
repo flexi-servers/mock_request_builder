@@ -3,14 +3,15 @@ from fastapi import Depends
 from starlette.responses import JSONResponse, Response
 from starlette.status import HTTP_204_NO_CONTENT
 
-from mock_request_builder import BaseAuthProvider, MockRequestConfig
+from mock_request_builder import MockRequestConfig
+from mock_request_builder.config.auth import BaseAuthProvider
 from mock_request_builder.utils import model_enable_soft_delete
 
 
 def _build_delete_request(router: APIRouter,
                           config: MockRequestConfig,
                           sqlalchemy_model, tags, path,
-                          required_permission=[], override_id_type: type = int):
+                           override_id_type: type = int):
     if not path.count("{id}"):
         raise Exception("Path must have {id} as a part of it.")
 

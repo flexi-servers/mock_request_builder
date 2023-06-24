@@ -2,15 +2,17 @@ from typing import List, Callable, Awaitable, Type, Coroutine, Any
 
 from fastapi import APIRouter
 from pydantic import BaseModel
+from sqlalchemy import Engine
 from sqlalchemy.orm import DeclarativeMeta
 
+from mock_request_builder.config.auth import BaseAuthProvider
 from mock_request_builder.config.config import MockRequestConfig
 from mock_request_builder.config.parent import ParentConfig
-from mock_request_builder.provider import BaseAuthProvider
 from mock_request_builder.requests.create import _create_request_builder, _parent_create_request_builder
 from mock_request_builder.requests.delete import _build_delete_request
 from mock_request_builder.requests.get import _build_multi_get_request, _build_parent_get_request, _build_single_get_request
-from mock_request_builder.requests.not_implemented.revision import _get_revisions
+from mock_request_builder.requests.models.revision import RevisionBase
+from mock_request_builder.requests.revision import _get_revisions
 from mock_request_builder.requests.update import _build_update_request
 
 
@@ -48,12 +50,15 @@ class MockBuilder:
         self.parent_config = parent_config
         self.config = config
 
-
-
         # Override id type
         if primary_key_type is None:
             raise Exception("primary_key_type cannot be None")
         self.primary_key_type = primary_key_type
+
+
+    @staticmethod
+    def create_tables(db:Engine):
+        RevisionBase.metadata.create_all(db)
 
     def create(self,
                post_function: Callable[[BaseAuthProvider, DeclarativeMeta], Coroutine[Any, Any, None]] | None = None):
@@ -113,12 +118,12 @@ class MockBuilder:
                               config=self.config,
                               override_id_type=self.primary_key_type, post_function=post_function)
 
-    def delete(self, permissions=None):
+    def delete(self):
         self.used_methods.append("delete")
         _build_delete_request(router=self.router, config=self.config,sqlalchemy_model=self.sqlalchemy_model, tags=self.tags, path=self.path + "/{id}",
-                              required_permission=permissions, override_id_type=self.primary_key_type)
+                              override_id_type=self.primary_key_type)
 
-    def revisions(self, permissions=None):
+    def revisions(self):
         self.used_methods.append("revisions")
         _get_revisions(router=self.router, sqlalchemy_model=self.sqlalchemy_model, tags=self.tags, path=self.path + "/{id}",
-                       required_permission=permissions, override_id_type=self.primary_key_type)
+                       override_id_type=self.primary_key_type)
