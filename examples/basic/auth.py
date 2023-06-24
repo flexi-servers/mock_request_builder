@@ -29,7 +29,9 @@ auth_router = APIRouter()
 @auth_router.post("/auth/login", tags=["auth"])
 async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
     # TODO: implement login
-    return {"access_token": jwt.encode({}, jwt_secret, algorithm='HS256'), "token_type": "bearer"}
+    # Generate a jwt access token
+    token_data= {}
+    return {"access_token": jwt.encode(token_data, jwt_secret, algorithm='HS256'), "token_type": "bearer"}
 
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login", auto_error=False)
@@ -54,7 +56,11 @@ class MockConfig(MockRequestConfig):
                 headers={"WWW-Authenticate": "Bearer"},
             )
         try:
+            # The TOKEN here is a JWT token
+            # TODO: Check if the token is valid
+            # here we just check it with the secret
             data = jwt.decode(token, jwt_secret, algorithms='HS256')
+            # Return a AuthProvider, It must be a subclass of BaseAuthProvider
             return self.DBAuthProvider(db, data)
 
         except Exception as e:
