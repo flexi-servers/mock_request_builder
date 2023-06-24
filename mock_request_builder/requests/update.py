@@ -1,3 +1,4 @@
+import json
 import logging
 from typing import Callable, List, Awaitable
 
@@ -6,7 +7,8 @@ from fastapi import Depends
 from sqlalchemy.orm import DeclarativeMeta
 from starlette.responses import JSONResponse
 
-from mock_request_builder import BaseAuthProvider, MockRequestConfig
+from mock_request_builder import MockRequestConfig
+from mock_request_builder.config.auth import BaseAuthProvider
 from mock_request_builder.sqlalchemy_to_pydantic import sqlalchemy_update_builder, sqlalchemy_to_json
 from mock_request_builder.utils import model_enable_soft_delete
 
@@ -31,19 +33,12 @@ def _build_update_request(router: APIRouter,
                  operation_id='update_' + sqlalchemy_model.__tablename__)
     async def update(id: override_id_type, model: update_model, auth_state: BaseAuthProvider = Depends(config.get_auth_provider)):
 
-        one_param = False
-        for j in update_keys:
-            if getattr(model, j, None) is not None:
-                one_param = True
-                break
-
+        data = json.loads(model.json(exclude_unset=True))
         db = auth_state.db
 
-        if not one_param:
+        if len(data.keys()) == 0:
             return JSONResponse(status_code=400, content={"error": "No parameters given"})
-
         row = db.query(sqlalchemy_model)
-
 
         query = row.filter(sqlalchemy_model.id == id)
         if enable_soft_delete:
@@ -56,6 +51,8 @@ def _build_update_request(router: APIRouter,
 
         updated_keys = []
         for j in update_keys:
+            if j not in data:
+                continue
             # skip keys not included in received update model
             if j not in model.__dict__:
                 continue
