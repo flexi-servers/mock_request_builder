@@ -1,3 +1,5 @@
-jwt
+pyjwt
 uvicorn
 starlette
+python-multipart
+fastapi

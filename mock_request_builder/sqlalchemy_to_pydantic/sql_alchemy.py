@@ -24,7 +24,7 @@ def memoize(function):
 
 
 class OrmConfig(BaseConfig):
-    orm_mode = True
+    from_attributes = True
 
 
 def get_type_of_column(column: ColumnProperty,
