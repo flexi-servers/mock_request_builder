@@ -55,6 +55,8 @@ def get_type_of_column(column: ColumnProperty,
         default = ...
     if override_all_optional or name in override_key_optional:
         default = None
+    if default is None:
+        python_type = Optional[python_type]
     return python_type, default
 
 
